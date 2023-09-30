@@ -1,189 +1,131 @@
-# Writing good CL descriptions
+# 良いCL（変更リスト）の説明を書く
 
+CLの説明は、**何の**変更が行われ、**なぜ**行われたのかについての公的な記録です。これはバージョン管理の履歴の永続的な一部となり、年月を経てレビュアー以外の何百人もの人々によって読まれる可能性があります。
 
+未来の開発者は、その説明に基づいてあなたのCLを検索します。将来、誰かがその関連性のかすかな記憶をもっているが、詳細は手元にない状況であなたの変更を探しているかもしれません。重要な情報がすべてコード内にあり、説明にはない場合、彼らがあなたのCLを見つけるのははるかに困難になります。
 
-A CL description is a public record of **what** change is being made and **why**
-it was made. It will become a permanent part of our version control history, and
-will possibly be read by hundreds of people other than your reviewers over the
-years.
+## 最初の行 {#firstline}
 
-Future developers will search for your CL based on its description. Someone in
-the future might be looking for your change because of a faint memory of its
-relevance but without the specifics handy. If all the important information is
-in the code and not the description, it's going to be a lot harder for them to
-locate your CL.
+*   行われることの短い要約。
+*   命令形の完全な文。
+*   空行で続ける。
 
-## First Line {#firstline}
+CL説明の**最初の行**は、CLによって**具体的に何が行われるか**についての短い要約であり、その後に空行が続きます。これはバージョン管理の履歴要約に表示されるため、未来のコード検索者があなたのCLやその全体の説明を読まずに、あなたのCLが実際に*何をしたのか*、また他のCLとどのように異なるのかを理解できるほど、情報提供が十分でなければなりません。つまり、最初の行は単独で存在し、読者がコード履歴をはるかに速くスキャンできるようにするべきです。
 
-*   Short summary of what is being done.
-*   Complete sentence, written as though it was an order.
-*   Follow by empty line.
+最初の行を短く、集中的に、そして的を射たものに保つように努力してください。明確性と、読者に対する有用性が最優先事項であるべきです。
 
-The **first line** of a CL description should be a short summary of
-*specifically* **what** *is being done by the CL*, followed by a blank line.
-This is what appears in version control history summaries, so it should be
-informative enough that future code searchers don't have to read your CL or its
-whole description to understand what your CL actually *did* or how it differs
-from other CLs. That is, the first line should stand alone, allowing readers to
-skim through code history much faster.
+慣習により、CL説明の最初の行は命令文（imperative sentence）として書かれた完全な文です。例えば、「**FizzBuzz RPCを削除し、新しいシステムで置き換える。**」と言う代わりに、「**FizzBuzz RPCを削除して、新しいシステムで置き換えます。**」と書きます。ただし、説明の残りを命令形で書く必要はありません。
 
-Try to keep your first line short, focused, and to the point. The clarity and
-utility to the reader should be the top concern.
+## 本文は情報提供が豊富 {#informative}
 
-By tradition, the first line of a CL description is a complete sentence, written
-as though it were an order (an imperative sentence). For example, say
-\"**Delete** the FizzBuzz RPC and **replace** it with the new system." instead
-of \"**Deleting** the FizzBuzz RPC and **replacing** it with the new system."
-You don't have to write the rest of the description as an imperative sentence,
-though.
+[最初の行](#firstline)は短く、集中的な要約であるべきですが、説明の残りは、読者が変更リストを全体的に理解するために必要な詳細と補足情報を含むべきです。解決される問題の簡単な説明や、なぜこれが最良のアプローチであるかなどが含まれるかもしれません。アプローチに不足がある場合は、それも言及されるべきです。関連性がある場合は、バグ番号、ベンチマーク結果、設計文書へのリンクなどの背景情報を含めてください。
 
-## Body is Informative {#informative}
+外部リソースへのリンクを含める場合は、アクセス制限や保存ポリシーにより、将来の読者がそれらを見ることができないかもしれないと考慮してください。可能な限り、レビュアーや未来の読者がCLを理解するための十分な文脈を提供してください。
 
-The [first line](#firstline) should be a short, focused summary, while the rest
-of the description should fill in the details and include any supplemental
-information a reader needs to understand the changelist holistically. It might
-include a brief description of the problem that's being solved, and why this is
-the best approach. If there are any shortcomings to the approach, they should be
-mentioned. If relevant, include background information such as bug numbers,
-benchmark results, and links to design documents.
+小さなCLであっても、細部への注意が必要です。CLを文脈に置いてください。
 
-If you include links to external resources consider that they may not be visible
-to future readers due to access restrictions or retention policies. Where
-possible include enough context for reviewers and future readers to understand
-the CL.
+## 悪いCLの説明 {#bad}
 
-Even small CLs deserve a little attention to detail. Put the CL in context.
+「バグを修正」は不十分なCLの説明です。どのバグですか？それを修正するために何をしましたか？同様に悪い説明としては以下のようなものがあります：
 
-## Bad CL Descriptions {#bad}
+-   「ビルドを修正。」
+-   「パッチを追加。」
+-   「コードをAからBに移動。」
+-   「フェーズ1。」
+-   「便利な関数を追加。」
+-   「奇妙なURLを削除。」
 
-"Fix bug" is an inadequate CL description. What bug? What did you do to fix it?
-Other similarly bad descriptions include:
+これらのいくつかは実際のCLの説明です。短いにもかかわらず、十分な有用な情報を提供していません。
 
--   "Fix build."
--   "Add patch."
--   "Moving code from A to B."
--   "Phase 1."
--   "Add convenience functions."
--   "kill weird URLs."
+## 良いCLの説明 {#good}
 
-Some of those are real CL descriptions. Although short, they do not provide
-enough useful information.
+良い説明の例をいくつか挙げます。
 
-## Good CL Descriptions {#good}
+### 機能の変更
 
-Here are some examples of good descriptions.
+例：
 
-### Functionality change
-
-Example:
-
-> rpc: remove size limit on RPC server message freelist.
+> rpc: RPCサーバーメッセージのフリーリストにサイズ制限をなくす。
 >
-> Servers like FizzBuzz have very large messages and would benefit from reuse.
-> Make the freelist larger, and add a goroutine that frees the freelist entries
-> slowly over time, so that idle servers eventually release all freelist
-> entries.
+> FizzBuzzのようなサーバーは非常に大きなメッセージを持っており、再利用により利益を得られます。フリーリストを大きくし、フリーリストのエントリを時間をかけてゆっくりと解放するgoroutineを追加します。これにより、アイドル状態のサーバーは最終的にすべ
 
-The first few words describe what the CL actually does. The rest of the
-description talks about the problem being solved, why this is a good solution,
-and a bit more information about the specific implementation.
+てのフリーリストのエントリを解放します。
 
-### Refactoring
+最初の数語は、CLが実際に何をするのかを説明しています。説明の残りは、解決される問題、なぜこれが良い解決策であるか、および具体的な実装についての少し詳しい情報を話しています。
 
-Example:
+### リファクタリング
 
-> Construct a Task with a TimeKeeper to use its TimeStr and Now methods.
+例：
+
+> TimeKeeperを使用してタスクを構築し、そのTimeStrおよびNowメソッドを使用する。
 >
-> Add a Now method to Task, so the borglet() getter method can be removed (which
-> was only used by OOMCandidate to call borglet's Now method). This replaces the
-> methods on Borglet that delegate to a TimeKeeper.
+> タスクにNowメソッドを追加し、borglet()のgetterメソッドを削除します（これはOOMCandidateがborgletのNowメソッドを呼び出すためにのみ使用されていました）。これにより、TimeKeeperに委譲するBorglet上のメソッドが置き換えられます。
 >
-> Allowing Tasks to supply Now is a step toward eliminating the dependency on
-> Borglet. Eventually, collaborators that depend on getting Now from the Task
-> should be changed to use a TimeKeeper directly, but this has been an
-> accommodation to refactoring in small steps.
+> タスクがNowを提供することで、Borgletへの依存を排除する一歩となります。最終的には、タスクからNowを取得する依存関係を持つコラボレータは、直接TimeKeeperを使用するように変更されるべきですが、これは小規模なステップでリファクタリングを進めるための妥協です。
 >
-> Continuing the long-range goal of refactoring the Borglet Hierarchy.
+> Borglet階層のリファクタリングの長期的な目標を続けます。
 
-The first line describes what the CL does and how this is a change from the
-past. The rest of the description talks about the specific implementation, the
-context of the CL, that the solution isn't ideal, and possible future direction.
-It also explains *why* this change is being made.
+最初の行は、CLが何をしているのか、これが過去とどのように異なるのかを説明しています。説明の残りは、具体的な実装、CLの文脈、解決策が理想的でない点、および可能な将来の方向性について説明しています。また、この変更が行われる*理由*も説明しています。
 
-### Small CL that needs some context
+### 文脈が必要な小さなCL
 
-Example:
+例：
 
-> Create a Python3 build rule for status.py.
+> status.py用のPython3ビルドルールを作成する。
 >
-> This allows consumers who are already using this as in Python3 to depend on a
-> rule that is next to the original status build rule instead of somewhere in
-> their own tree. It encourages new consumers to use Python3 if they can,
-> instead of Python2, and significantly simplifies some automated build file
-> refactoring tools being worked on currently.
+> これにより、すでにPython3でこれを使用している消費者が、元のステータスビルドルールの隣にあるルールに依存することができます。これは、Python2ではなくPython3を使用できる新しい消費者に対してそれを奨励し、現在作業中の一部の自動ビルドファイルリファクタリングツールを大幅に単純化します。
 
-The first sentence describes what's actually being done. The rest of the
-description explains *why* the change is being made and gives the reviewer a lot
-of context.
+最初の文は、実際に何が行われているのかを説明しています。説明の残りは、変更が行われる*理由*を説明し、レビュアーに多くの文脈を提供しています。
 
-## Using tags {#tags}
+## タグの使用 {#tags}
 
-Tags are manually entered labels that can be used to categorize CLs. These may
-be supported by tools or just used by team convention.
+タグは手動で入力されるラベルで、CLをカテゴリ分けするために使用できます。これはツールによってサポートされているか、チームの慣習によって使用される場合があります。
 
-For example:
+例：
 
 -   "[tag]"
--   "[a longer tag]"
+-   "[長いタグ]"
 -   "#tag"
 -   "tag:"
 
-Using tags is optional.
+タグの使用はオプションです。
 
-When adding tags, consider whether they should be in the [body](#informative) of
-the CL description or the [first line](#firstline). Limit the usage of tags in
-the first line, as this can obscure the content.
+タグを追加する場合、それらがCL説明の[本文](#informative)にあるべきか、[最初の行](#firstline)にあるべきかを考慮してください。最初の行でのタグの使用を制限し、コンテンツを不明瞭にしないようにしてください。
 
-Examples with and without tags:
+タグがある場合とない場合の例：
 
 ``` {.good}
-// Tags are okay in the first line if kept short.
-[banana] Peel the banana before eating.
+// 最初の行で短く保たれている場合、タグは大丈夫です。
+[バナナ] 食べる前にバナナの皮をむく。
 
-// Tags can be inlined in content.
-Peel the #banana before eating.
+// タグはコンテンツにインラインできます。
+#バナナを食べる前にむく。
 
-// Tags are optional.
-Peel the banana before eating.
+// タグはオプションです。
+バナナを食べる前にむく。
 
-// Multiple tags are acceptable if kept short.
-#banana #apple: Assemble a fruit basket.
+// 複数のタグも、短く保たれている場合は許容されます。
+#バナナ #リンゴ: フルーツバスケットを作る。
 
-// Tags can go anywhere in the CL description.
-> Assemble a fruit basket.
+// タグはCL説明のどこにでも行くことができます。
+> フルーツバスケットを作る。
 >
-> #banana #apple
+> #バナナ #リンゴ
 ```
 
 ``` {.bad}
-// Too many tags (or tags that are too long) overwhelm the first line.
+// あまりにも多くのタグ（または長すぎるタグ）は最初の行を圧倒します。
 //
-// Instead, consider whether the tags can be moved into the description body
-// and/or shortened.
-[banana peeler factory factory][apple picking service] Assemble a fruit basket.
+// 代わりに、タグが説明の本文に移動できるか、または短縮できるかどうかを検討してください。
+[バナナ皮むき工場][リンゴ摘みサービス] フルーツバスケットを作る。
 ```
 
-## Generated CL descriptions
+## 生成されたCLの説明
 
-Some CLs are generated by tools. Whenever possible, their descriptions should
-also follow the advice here. That is, their first line should be short, focused,
-and stand alone, and the CL description body should include informative details
-that help reviewers and future code searchers understand each CL's effect.
+一部のCLはツールによって生成されます。可能な限り、それらの説明もここでのアドバイスに従うべきです。つまり、最初の行は短く、集中して、単独で存在するべきであり、CL説明の本文は、レビュアーや未来のコード検索者が各CLの効果を理解するのに役立つ情報提供が豊富な詳細を含むべきです。
 
-## Review the description before submitting the CL
+## CLを提出する前に説明を確認する
 
-CLs can undergo significant change during review. It can be worthwhile to review
-a CL description before submitting the CL, to ensure that the description still
-reflects what the CL does.
+CLはレビュー中に大きな変更を受ける可能性があります。CLの説明がまだCLが行っていることを反映しているかどうかを確認することは、価値があります。
 
-Next: [Small CLs](small-cls.md)
+次へ：[小さなCL](small-cls.md)

@@ -1,113 +1,51 @@
-# The Standard of Code Review
+# コードレビューの基準
 
+コードレビューの主要な目的は、Googleのコードベース全体のコード健全性が時間とともに向上していくことを確認することです。コードレビューの全てのツールとプロセスは、この目的に沿って設計されています。
 
+この目的を達成するためには、いくつかのトレードオフをバランスよく取る必要があります。
 
-The primary purpose of code review is to make sure that the overall
-code health of Google's code
-base is improving over time. All of the tools and processes of code review are
-designed to this end.
+まず第一に、開発者は自分のタスクで**進捗**を出すことができなければなりません。コードベースに改善を加えない限り、コードベースは決して改善されません。また、レビュアーが**いかなる**変更も困難にする場合、開発者は今後改善を加える意欲を失います。
 
-In order to accomplish this, a series of trade-offs have to be balanced.
+一方で、レビュアーの責務は、各CLが時間とともにコードベース全体のコード健全性が低下しないような品質であることを確認することです。これは難しい場合があります。特に、チームが大きな時間制約下にあると、目標を達成するために手短かな手法を取らざるを得ないと感じると、コードベースは時間とともに少しずつコード健全性が低下する傾向があります。
 
-First, developers must be able to _make progress_ on their tasks. If you never
-submit an improvement to the codebase, then the codebase never improves. Also,
-if a reviewer makes it very difficult for _any_ change to go in, then developers
-are disincentivized to make improvements in the future.
+さらに、レビュアーはレビューしているコードに対する所有権と責任を持っています。彼らはコードベースが一貫性を持ち、保守可能であるとともに、[「コードレビューで何を探すべきか」](looking-for.md)で述べられているその他の事項を確保したいと考えています。
 
-On the other hand, it is the duty of the reviewer to make sure that each CL is
-of such a quality that the overall code health of their codebase is not
-decreasing as time goes on. This can be tricky, because often, codebases degrade
-through small decreases in code health over time, especially when a team is
-under significant time constraints and they feel that they have to take
-shortcuts in order to accomplish their goals.
+したがって、コードレビューで期待される基準として以下のルールがあります：
 
-Also, a reviewer has ownership and responsibility over the code they are
-reviewing. They want to ensure that the codebase stays consistent, maintainable,
-and all of the other things mentioned in
-["What to look for in a code review."](looking-for.md)
+**一般的に、レビュアーはCLが完璧でなくても、作業中のシステムの全体的なコード健全性を確実に向上させる状態になったら、承認するべきです。**
 
-Thus, we get the following rule as the standard we expect in code reviews:
+これがコードレビューガイドラインの中での**最優先の原則**です。
 
-**In general, reviewers should favor approving a CL once it is in a state where
-it definitely improves the overall
-code health of the system
-being worked on, even if the CL isn't perfect.**
+もちろんこれには制限があります。例えば、CLがレビュアーがそのシステムで望んでいない機能を追加する場合、そのコードがよく設計されていてもレビュアーは承認を拒否することが確かにあります。
 
-That is _the_ senior principle among all of the code review guidelines.
+ここでの重要な点は、「完璧な」コードというものは存在しないということです。存在するのは**より良い**コードだけです。レビュアーは、承認を与える前にCLの各小さな部分を磨き上げるように著者に要求するべきではありません。むしろ、レビュアーは進捗を出す必要性と、提案されている変更の重要性とをバランスよく取るべきです。完璧を求めるのではなく、レビュアーが求めるべきは**継続的な改善**です。全体として、システムの保守性、可読性、理解可能性を向上させるCLは、「完璧」でないからといって何日も何週間も遅延させるべきではありません。
 
-There are limitations to this, of course. For example, if a CL adds a feature
-that the reviewer doesn't want in their system, then the reviewer can certainly
-deny approval even if the code is well-designed.
+レビュアーは**常に**、何かがより良くできるというコメントを自由に残すべきですが、それがそれほど重要でない場合は、
 
-A key point here is that there is no such thing as "perfect" code&mdash;there is
-only _better_ code. Reviewers should not require the author to polish every tiny
-piece of a CL before granting approval. Rather, the reviewer should balance out
-the need to make forward progress compared to the importance of the changes they
-are suggesting. Instead of seeking perfection, what a reviewer should seek is
-_continuous improvement_. A CL that, as a whole, improves the maintainability,
-readability, and understandability of the system shouldn't be delayed for days
-or weeks because it isn't "perfect."
+それを著者に知らせるために「Nit: 」のような接頭語をつけるべきです。
 
-Reviewers should _always_ feel free to leave comments expressing that something
-could be better, but if it's not very important, prefix it with something like
-"Nit: " to let the author know that it's just a point of polish that they could
-choose to ignore.
+注意：この文書のどの部分も、システムの全体的なコード健全性を確実に**悪化させる**CLをチェックインする理由を正当化するものではありません。それをする唯一の時期は、[緊急事態](../emergencies.md)が発生した場合です。
 
-Note: Nothing in this document justifies checking in CLs that definitely
-_worsen_ the overall code health of the system. The only time you would do that
-would be in an [emergency](../emergencies.md).
+## メンタリング
 
-## Mentoring
+コードレビューは、開発者に新しい言語、フレームワーク、または一般的なソフトウェア設計の原則について何か新しいことを教える重要な機能を果たすことがあります。新しいことを学ぶ手助けとなるコメントを残すのは常に構いません。知識を共有することは、時間とともにシステムのコード健全性を向上させる一部です。ただし、コメントが純粋に教育的であり、この文書で述べられている基準を満たすためには必須ではない場合、それは「Nit: 」で始めるか、著者がこのCLでそれを解決する必要はないということを何らかの形で示すべきです。
 
-Code review can have an important function of teaching developers something new
-about a language, a framework, or general software design principles. It's
-always fine to leave comments that help a developer learn something new. Sharing
-knowledge is part of improving the code health of a system over time. Just keep
-in mind that if your comment is purely educational, but not critical to meeting
-the standards described in this document, prefix it with "Nit: " or otherwise
-indicate that it's not mandatory for the author to resolve it in this CL.
+## 原則 {#principles}
 
-## Principles {#principles}
+*   技術的な事実とデータは意見と個人の好みに優先します。
 
-*   Technical facts and data overrule opinions and personal preferences.
+*   スタイルに関する問題については、[スタイルガイド](http://google.github.io/styleguide/)が絶対的な権威です。スタイルガイドにない純粋なスタイルのポイント（空白など）は個人の好みの問題です。スタイルはそこにあるものと一致しているべきです。以前のスタイルがない場合は、著者のものを受け入れます。
 
-*   On matters of style, the [style guide](http://google.github.io/styleguide/)
-    is the absolute authority. Any purely style point (whitespace, etc.) that is
-    not in the style guide is a matter of personal preference. The style should
-    be consistent with what is there. If there is no previous style, accept the
-    author's.
+*   **ソフトウェア設計の側面はほとんど決して純粋なスタイルの問題や単なる個人の好みではありません。**それらは基礎となる原則に基づいており、それらの原則に基づいて評価されるべきです。時々、いくつかの有効なオプションがあります。著者が（データまたは堅牢なエンジニアリングの原則に基づいて）いくつかのアプローチが等しく有効であると示すことができれば、レビュアーは著者の好みを受け入れるべきです。それ以外の場合、選択はソフトウェア設計の標準原則によって指示されます。
 
-*   **Aspects of software design are almost never a pure style issue or just a
-    personal preference.** They are based on underlying principles and should be
-    weighed on those principles, not simply by personal opinion. Sometimes there
-    are a few valid options. If the author can demonstrate (either through data
-    or based on solid engineering principles) that several approaches are
-    equally valid, then the reviewer should accept the preference of the author.
-    Otherwise the choice is dictated by standard principles of software design.
+*   他のルールが適用されない場合、レビュアーは著者に、現在のコードベースと一致するように要求することができます。ただし、それがシステムの全体的なコード健全性を悪化させない限りです。
 
-*   If no other rule applies, then the reviewer may ask the author to be
-    consistent with what is in the current codebase, as long as that doesn't
-    worsen the overall code health of the system.
+## コンフリクトの解決 {#conflicts}
 
-## Resolving Conflicts {#conflicts}
+コードレビューにおいて何らかのコンフリクトが発生した場合、最初のステップは常に、開発者とレビュアーがこの文書と[CL著者のガイド](../developer/index.md)およびこの[レビュアーガイド](index.md)の他の文書に基づいて合意に達することを試みることです。
 
-In any conflict on a code review, the first step should always be for the
-developer and reviewer to try to come to consensus, based on the contents of
-this document and the other documents in
-[The CL Author's Guide](../developer/index.md) and this
-[Reviewer Guide](index.md).
+合意に達することが特に困難な場合、レビュアーと著者の間で対面の会議やビデオ会議を持つことで、コードレビューコメントを通じてコンフリクトを解決しようとするだけではなく、助けとなることがあります。（これを行う場合は、将来の読者のために、CLへのコメントとして議論の結果を記録してください。）
 
-When coming to consensus becomes especially difficult, it can help to have a
-face-to-face meeting or a video conference between the reviewer and the author, instead of
-just trying to resolve the conflict through code review comments. (If you do
-this, though, make sure to record the results of the discussion as a comment on
-the CL, for future readers.)
+それが状況を解決しない場合、最も一般的な解決策はエスカレーションです。よくあるエスカレーションの経路は、より広いチームの議論、テクニカルリードに意見を求める、コードのメンテナーに決定を求める、またはEngマネージャーに助けを求めることです。**著者とレビュアーが合意に達することができないためにCLが放置されることはありません。**
 
-If that doesn't resolve the situation, the most common way to resolve it would
-be to escalate. Often the
-escalation path is to a broader team discussion, having a Technical Lead weigh in, asking
-for a decision from a maintainer of the code, or asking an Eng Manager to help
-out. **Don't let a CL sit around because the author and the reviewer can't come
-to an agreement.**
-
-Next: [What to look for in a code review](looking-for.md)
+次へ：[コードレビューで何を探すべきか](looking-for.md)

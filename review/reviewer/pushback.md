@@ -1,83 +1,33 @@
-# Handling pushback in code reviews
+# コードレビューでの反発の取り扱い
 
+開発者がコードレビューに反発することがあります。あなたの提案に異議を唱えたり、一般的に厳格すぎると不平を言う場合があります。
 
+## 誰が正しいのか？ {#who_is_right}
 
-Sometimes a developer will push back on a code review. Either they will disagree
-with your suggestion or they will complain that you are being too strict in
-general.
+開発者があなたの提案に異議を唱えた場合、まず彼らが正しいかどうかを考慮する時間を取ってください。多くの場合、彼らはあなたよりもコードに近い立場にいるため、特定の側面についてより深い洞察を持っている可能性があります。彼らの議論は理にかなっていますか？コードの健全性の観点から理にかなっていますか？もしそうであれば、彼らが正しいと知らせ、その問題を放置してください。
 
-## Who is right? {#who_is_right}
+ただし、開発者が常に正しいわけではありません。この場合、レビュアーはなぜ自分の提案が正しいと信じるのか、さらに説明するべきです。良い説明は、開発者の返答に対する理解と、変更が要求されている理由についての追加情報の両方を示します。
 
-When a developer disagrees with your suggestion, first take a moment to consider
-if they are correct. Often, they are closer to the code than you are, and so
-they might really have a better insight about certain aspects of it. Does their
-argument make sense? Does it make sense from a code health perspective? If so,
-let them know that they are right and let the issue drop.
+特に、レビュアーが自分の提案がコードの健全性を向上させると信じている場合、その結果としてのコード品質の向上が追加作業の要求を正当化すると信じるなら、変更を推進し続けるべきです。**コードの健全性を向上させるためには、小さなステップが必要です。**
 
-However, developers are not always right. In this case the reviewer should
-further explain why they believe that their suggestion is correct. A good
-explanation demonstrates both an understanding of the developer's reply, and
-additional information about why the change is being requested.
+提案の説明を何度か繰り返さなければならない場合もあります。ただし、常に[礼儀正しく](comments.md#courtesy)、開発者に対して自分が彼らの言っていることを*聞いている*が、同意していないということを知らせてください。
 
-In particular, when the reviewer believes their suggestion will improve code
-health, they should continue to advocate for the change, if they believe the
-resulting code quality improvement justifies the additional work requested.
-**Improving code health tends to happen in small steps.**
+## 開発者を怒らせる {#upsetting_developers}
 
-Sometimes it takes a few rounds of explaining a suggestion before it really
-sinks in. Just make sure to always stay [polite](comments.md#courtesy) and let
-the developer know that you *hear* what they're saying, you just don't *agree*.
+レビュアーは、改善を強く主張すると開発者が怒ると考えることがあります。確かに開発者が怒ることもありますが、それは通常短期的で、後であなたが彼らのコードの品質を向上させてくれたことに非常に感謝します。通常、あなたがコメントで[礼儀正しければ](comments.md#courtesy)、開発者は実際には怒らず、心配はレビュアーの頭の中にしか存在しません。怒りは通常、コメントの書き方に関するものであり、コード品質に対するレビュアーの主張に関するものではありません。
 
-## Upsetting Developers {#upsetting_developers}
+## 後で整理する {#later}
 
-Reviewers sometimes believe that the developer will be upset if the reviewer
-insists on an improvement. Sometimes developers do become upset, but it is
-usually brief and they become very thankful later that you helped them improve
-the quality of their code. Usually, if you are [polite](comments.md#courtesy) in
-your comments, developers actually don't become upset at all, and the worry is
-just in the reviewer's mind. Upsets are usually more about
-[the way comments are written](comments.md#courtesy) than about the reviewer's
-insistence on code quality.
+反発の一般的な原因は、開発者が（理解できるように）物事を終わらせたいと考えていることです。彼らはこのCLを入れるためにもう一回レビューを受けることを望んでいません。したがって、後で何かを整理すると言って、今このCLにLGTMをしてくれと言います。一部の開発者はこれに非常に優れており、問題を修正する次のCLを即座に書きます。しかし、経験上、開発者が元のCLを書いた後に時間が経つほど、この整理が行われる可能性は減少します。実際、開発者が現在のCLの直後に整理を*即座に*行わない限り、それは決して行われません。これは開発者が無責任だからではなく、彼らには多くの仕事があり、他の仕事のプレッシャーで整理が失われたり忘れられたりするからです。したがって、通常は開発者に、コードがコードベースに入って「完了」する前に、*今*彼らのCLを整理するように強く主張するのが最善です。人々に「後で整理する」ことを許すのは、コードベースが劣化する一般的な方法です。
 
-## Cleaning It Up Later {#later}
+CLが新たな複雑性を導入する場合、それは[緊急事態](../emergencies.md)でない限り、提出前に整理されなければなりません。CLが周囲の問題を露呈し、それらがすぐに対処できない場合、開発者は整理のためのバグを登録し、それを自分自身に割り当てるべきです。それにより、それが失われることがありません。彼らはオプションで、その登録されたバグを参照するTODOコメントをコードに書くこともできます。
 
-A common source of push back is that developers (understandably) want to get
-things done. They don't want to go through another round of review just to get
-this CL in. So they say they will clean something up in a later CL, and thus you
-should LGTM *this* CL now. Some developers are very good about this, and will
-immediately write a follow-up CL that fixes the issue. However, experience shows
-that as more time passes after a developer writes the original CL, the less
-likely this clean up is to happen. In fact, usually unless the developer does
-the clean up *immediately* after the present CL, it never happens. This isn't
-because developers are irresponsible, but because they have a lot of work to do
-and the cleanup gets lost or forgotten in the press of other work. Thus, it is
-usually best to insist that the developer clean up their CL *now*, before the
-code is in the codebase and "done." Letting people "clean things up later" is a
-common way for codebases to degenerate.
+## 厳格さに対する一般的な不平 {#strictness}
 
-If a CL introduces new complexity, it must be cleaned up before submission
-unless it is an [emergency](../emergencies.md). If the CL exposes surrounding
-problems and they can't be addressed right now, the developer should file a bug
-for the cleanup and assign it to themselves so that it doesn't get lost. They
-can optionally also write a TODO comment in the code that references the filed
-bug.
+以前はかなり緩いコードレビューを行っていたが、厳格なレビューに切り替えた場合、一部の開発者は非常に大声で不平を言います。コードレビューの[速度](speed.md)を向上させると、通常これらの不平は消え去ります。
 
-## General Complaints About Strictness {#strictness}
+これらの不平が消え去るまでに数ヶ月かかる場合もありますが、最終的には開発者は厳格なコードレビューがどれだけ素晴らしいコードを生成するのかを見て、その価値を認めるようになります。時には最も大声で抗議していた人々が、彼らが本当にその価値を見る何かが起こると、あなたの最も強力なサポーターにさえなります。
 
-If you previously had fairly lax code reviews and you switch to having strict
-reviews, some developers will complain very loudly. Improving the
-[speed](speed.md) of your code reviews usually causes these complaints to fade
-away.
+## コンフリクトの解決 {#conflicts}
 
-Sometimes it can take months for these complaints to fade away, but eventually
-developers tend to see the value of strict code reviews as they see what great
-code they help generate. Sometimes the loudest protesters even become your
-strongest supporters once something happens that causes them to really see the
-value you're adding by being strict.
-
-## Resolving Conflicts {#conflicts}
-
-If you are following all of the above but you still encounter a conflict between
-yourself and a developer that can't be resolved, see
-[The Standard of Code Review](standard.md) for guidelines and principles that
-can help resolve the conflict.
+上記すべてに従っているにもかかわらず、自分自身と開発者との間で解決できないコンフリクトが発生した場合は、コンフリクトを解決するためのガイドラインと原則を提供する[コードレビューの基準](standard.md)を参照してください。

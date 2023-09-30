@@ -1,233 +1,130 @@
-# Small CLs
+# 小さなCLを作るためのガイド
 
+## なぜ小さなCLを書くのか？ {#why}
 
+小さくシンプルなCLは以下のような利点があります：
 
-## Why Write Small CLs? {#why}
+- **早くレビューされる。** レビュアーにとって、一つの大きなCLに30分を割くより、数回に分けて5分ずつ小さなCLをレビューする方が簡単です。
+- **より詳細にレビューされる。** 大きな変更では、レビュアーと著者が詳細なコメントのやり取りによって疲れ、重要な点が見落とされたり省略されたりすることがあります。
+- **バグを導入する可能性が低い。** 変更が少ないため、CLの影響について効率的に推論し、バグが導入されたかどうかを確認することが容易です。
+- **却下された場合の無駄な作業が少ない。** 大きなCLを書いてからレビュアーが全体的な方向性が間違っていると言った場合、多くの作業が無駄になります。
+- **マージが容易。** 大きなCLの作業には時間がかかるため、頻繁にマージを行う必要があり、多くのコンフリクトが生じる可能性があります。
+- **設計が容易。** 小さな変更の設計とコード品質を磨く方が、大きな変更のすべての詳細を洗練するよりもはるかに容易です。
+- **レビューでのブロッキングが少ない。** 全体的な変更の自己完結した部分を送信することで、現在のCLがレビューされている間にコーディングを続けることができます。
+- **ロールバックがシンプル。** 大きなCLは、初回のCL提出とロールバックCLの間に更新されるファイルに触れる可能性が高く、ロールバックを複雑にする可能性があります（中間のCLもおそらくロールバックする必要があります）。
 
-Small, simple CLs are:
+注意してください。**レビュアーは、それが大きすぎるという単一の理由であなたの変更を即座に却下する裁量権を持っています。** 通常、貢献に感謝しつつ、何らかの方法でそれを一連の小さな変更にするように依頼します。既に書き上げた後で変更を分割する作業は大変であり、レビュアーが大きな変更を受け入れるべき理由について多くの時間を議論する必要があるかもしれません。最初から小さなCLを書く方が簡単です。
 
--   **Reviewed more quickly.** It's easier for a reviewer to find five minutes
-    several times to review small CLs than to set aside a 30 minute block to
-    review one large CL.
--   **Reviewed more thoroughly.** With large changes, reviewers and authors tend
-    to get frustrated by large volumes of detailed commentary shifting back and
-    forth—sometimes to the point where important points get missed or dropped.
--   **Less likely to introduce bugs.** Since you're making fewer changes, it's
-    easier for you and your reviewer to reason effectively about the impact of
-    the CL and see if a bug has been introduced.
--   **Less wasted work if they are rejected.** If you write a huge CL and then
-    your reviewer says that the overall direction is wrong, you've wasted a lot
-    of work.
--   **Easier to merge.** Working on a large CL takes a long time, so you will
-    have lots of conflicts when you merge, and you will have to merge
-    frequently.
--   **Easier to design well.** It's a lot easier to polish the design and code
-    health of a small change than it is to refine all the details of a large
-    change.
--   **Less blocking on reviews.** Sending self-contained portions of your
-    overall change allows you to continue coding while you wait for your current
-    CL in review.
--   **Simpler to roll back.** A large CL will more likely touch files that get
-    updated between the initial CL submission and a rollback CL, complicating
-    the rollback (the intermediate CLs will probably need to be rolled back
-    too).
+## 小さいとは何か？ {#what_is_small}
 
-Note that **reviewers have discretion to reject your change outright for the
-sole reason of it being too large.** Usually they will thank you for your
-contribution but request that you somehow make it into a series of smaller
-changes. It can be a lot of work to split up a change after you've already
-written it, or require lots of time arguing about why the reviewer should accept
-your large change. It's easier to just write small CLs in the first place.
+一般的に、CLの適切なサイズは**一つの自己完結した変更**です。これは以下を意味します：
 
-## What is Small? {#what_is_small}
+- CLは、**一つのことにだけ対処する**最小限の変更を行います。これは通常、一度に一つの機能の一部分であり、全体ではありません。一般的には、大きすぎるCLを書くよりも、小さすぎるCLを書く方が良いです。許容可能なサイズは何かをレビュアーと共に見つけ出してください。
+- CLは、関連するテストコードを[含むべきです](#test_code)。
+- レビュアーがCLについて理解する必要があるすべてのこと（将来の開発を除く）は、CL内、CLの説明、既存のコードベース、またはすでにレビューされたCLのいずれかに含まれています。
+- CLがチェックインされた後も、システムはそのユーザーと開発者にとってうまく機能します。
+- CLは、その意味が理解しにくいほど小さくありません。新しいAPIを追加する場合、そのAPIの使用例も同じCLに含めると、レビュアーがAPIの使用方法をよりよく理解できます。これにより、未使用のAPIがチェックインされるのを防ぎます。
 
-In general, the right size for a CL is **one self-contained change**. This means
-that:
+「大きすぎる」とはどれほどかについての硬直的なルールはありません。通常、CLのサイズとして100行は妥当であり、1000行は大きすぎるとされますが、これはレビュアーの判断によります。変更が広がるファイル数もその「サイズ」に影響します。一つのファイルでの200行の変更は許容されるかもしれませんが、50ファイルに広がると通常は大きすぎます。
 
--   The CL makes a minimal change that addresses **just one thing**. This is
-    usually just one part of a feature, rather than a whole feature at once. In
-    general it's better to err on the side of writing CLs that are too small vs.
-    CLs that are too large. Work with your reviewer to find out what an
-    acceptable size is.
--   The CL should [include related test code](#test_code).
--   Everything the reviewer needs to understand about the CL (except future
-    development) is in the CL, the CL's description, the existing codebase, or a
-    CL they've already reviewed.
--   The system will continue to work well for its users and for the developers
-    after the CL is checked in.
--   The CL is not so small that its implications are difficult to understand. If
-    you add a new API, you should include a usage of the API in the same CL so
-    that reviewers can better understand how the API will be used. This also
-    prevents checking in unused APIs.
+あなたがコードを書き始めた瞬間からそのコードに密接に関与している一方で、レビュアーは多くの場合、そのコードについての文脈を持っていません。あなたが許容でき
 
-There are no hard and fast rules about how large is "too large." 100 lines is
-usually a reasonable size for a CL, and 1000 lines is usually too large, but
-it's up to the judgment of your reviewer. The number of files that a change is
-spread across also affects its "size." A 200-line change in one file might be
-okay, but spread across 50 files it would usually be too large.
+るサイズのCLが、レビュアーにとっては圧倒的に感じる場合があります。疑問の場合は、あなたが書く必要があると思っているよりも小さいCLを書いてください。レビュアーは、小さすぎるCLを受け取ることについてほとんど不満を言いません。
 
-Keep in mind that although you have been intimately involved with your code from
-the moment you started to write it, the reviewer often has no context. What
-seems like an acceptably-sized CL to you might be overwhelming to your reviewer.
-When in doubt, write CLs that are smaller than you think you need to write.
-Reviewers rarely complain about getting CLs that are too small.
+## 大きなCLが許される場合は？ {#large_okay}
 
-## When are Large CLs Okay? {#large_okay}
+大きな変更がそれほど問題ではないいくつかの状況があります：
 
-There are a few situations in which large changes aren't as bad:
+- 一つのファイルの削除は、通常一行の変更としてカウントできます。なぜなら、それはレビュアーにとってレビューするのにそれほど時間がかからないからです。
+- たまに、大きなCLが完全に信頼できる自動リファクタリングツールによって生成され、レビュアーの仕事はその変更を本当に望んでいるかどうかを確認し、言うことです。これらのCLは大きくてもよいですが、上記のいくつかの警告（例えばマージやテストなど）は依然として適用されます。
 
--   You can usually count deletion of an entire file as being just one line of
-    change, because it doesn't take the reviewer very long to review.
--   Sometimes a large CL has been generated by an automatic refactoring tool
-    that you trust completely, and the reviewer's job is just to verify and say
-    that they really do want the change. These CLs can be larger, although some
-    of the caveats from above (such as merging and testing) still apply.
+## 効率的に小さなCLを書く方法 {#efficiently}
 
-## Writing Small CLs Efficiently {#efficiently}
+小さなCLを書いて、次のCLを書く前にレビュアーがそれを承認するのを待つならば、多くの時間を無駄にすることになります。ですから、レビューを待っている間に作業を停止させない何らかの方法を見つけたいと思うでしょう。これには、同時に複数のプロジェクトに取り組む、すぐに利用可能であることに同意したレビュアーを見つける、対面でのレビューを行う、ペアプログラミングをする、または作業を即座に続けることができるようにCLを分割する、などが考えられます。
 
-If you write a small CL and then you wait for your reviewer to approve it before
-you write your next CL, then you're going to waste a lot of time. So you want to
-find some way to work that won't block you while you're waiting for review. This
-could involve having multiple projects to work on simultaneously, finding
-reviewers who agree to be immediately available, doing in-person reviews, pair
-programming, or splitting your CLs in a way that allows you to continue working
-immediately.
+## CLを分割する {#splitting}
 
-## Splitting CLs {#splitting}
+お互いに依存関係がある複数のCLを持つ作業を開始する際、コーディングに取り掛かる前に、それらのCLをどのように分割し、整理するかを高レベルで考えることが多くの場合有用です。
 
-When starting work that will have multiple CLs with potential dependencies among
-each other, it's often useful to think about how to split and organize those CLs
-at a high level before diving into coding.
+これは著者としてのあなたがCLを管理し、整理するのを容易にするだけでなく、コードレビュアーにとっても事を容易にするため、コードレビューがより効率的に行えます。
 
-Besides making things easier for you as an author to manage and organize your
-CLs, it also makes things easier for your code reviewers, which in turn makes
-your code reviews more efficient.
+異なるCLに作業を分割するためのいくつかの戦略を以下に示します。
 
-Here are some strategies for splitting work into different CLs.
+### 互いに積み重ねて複数の変更を行う {#stacking}
 
-### Stacking Multiple Changes on Top of Each Other {#stacking}
+CLをブロックすることなく分割する一つの方法は、一つの小さなCLを書き、それをレビューに送った後、すぐにそのCLを**基にした**別のCLを書き始めることです。ほとんどのバージョン管理システムでは、何らかの形でこれを可能にしています。
 
-One way to split up a CL without blocking yourself is to write one small CL,
-send it off for review, and then immediately start writing another CL *based* on
-the first CL. Most version control systems allow you to do this somehow.
+### ファイルによる分割 {#splitting-files}
 
-### Splitting by Files {#splitting-files}
+CLを分割するもう一つの方法は、異なるレビュアーが必要だがそれ以外は自己完結した変更によるファイルのグループ分けです。
 
-Another way to split up a CL is by groupings of files that will require
-different reviewers but are otherwise self-contained changes.
+例えば、プロトコルバッファに対する変更のための一つのCLと、そのプロトを使用するコードに対する変更のための別のCLを送信します。プロトのCLはコードのCLの前に提出する必要がありますが、両方とも同時にレビューされることができます。これを行う場合、他のCLについて両方のセットのレビュアーに通知するとよいでしょう。そうすることで、彼らはあなたの変更に対する文脈を持つことができます。
 
-For example: you send off one CL for modifications to a protocol buffer and
-another CL for changes to the code that uses that proto. You have to submit the
-proto CL before the code CL, but they can both be reviewed simultaneously. If
-you do this, you might want to inform both sets of reviewers about the other CL
-that you wrote, so that they have context for your changes.
+別の例：コードの変更のための一つのCLと、そのコードを使用する設定または実験のための別のCLを送信します。これも必要に応じてロールバックするのが容易です。設定/実験ファイルはコードの変更よりも高速にプロダクションにプッシュされることがよくあります。
 
-Another example: you send one CL for a code change and another for the
-configuration or experiment that uses that code; this is easier to roll back
-too, if necessary, as configuration/experiment files are sometimes pushed to
-production faster than code changes.
+### 横に分割する {#splitting-horizontally}
 
-### Splitting Horizontally {#splitting-horizontally}
+技術スタックの各層間の変更を隔離するために共有コードやスタブを作成することを検討してください。これは開発を促進するだけでなく、層間の抽象化を促進します。
 
-Consider creating shared code or stubs that help isolate changes between layers
-of the tech stack. This not only helps expedite development but also encourages
-abstraction between layers.
+例：計算機アプリを作成し、クライアント、API、サービス、データモデルの各層を持っています。共有のプロト署名は、サービス層とデータモデル層を互いに抽象化することができます。同様に、APIスタブは、クライアントコードの実装とサービスコードを分け、それらを独立して前進
 
-For example: You created a calculator app with client, API, service, and data
-model layers. A shared proto signature can abstract the service and data model
-layers from each other. Similarly, an API stub can split the implementation of
-client code from service code and enable them to move forward independently.
-Similar ideas can also be applied to more granular function or class level
-abstractions.
+させることができます。このような考え方は、より粒度の細かい関数やクラスレベルの抽象にも適用できます。
 
-### Splitting Vertically {#splitting-vertically}
+### 縦に分割する {#splitting-vertically}
 
-Orthogonal to the layered, horizontal approach, you can instead break down your
-code into smaller, full-stack, vertical features. Each of these features can be
-independent parallel implementation tracks. This enables some tracks to move
-forward while other tracks are awaiting review or feedback.
+層状の、水平なアプローチに直交して、コードをより小さな、フルスタックの、垂直な機能に分解することができます。これらの各機能は、独立した並列実装のトラックとなることができます。これにより、一部のトラックがレビューやフィードバックを待っている間に、他のトラックが前進することができます。
 
-Back to our calculator example from
-[Splitting Horizontally](#splitting-horizontally). You now want to support new
-operators, like multiplication and division. You could split this up by
-implementing multiplication and division as separate verticals or sub-features,
-even though they may have some overlap such as shared button styling or shared
-validation logic.
+[横に分割する](#splitting-horizontally)からの計算機の例に戻ります。これから乗算と除算といった新しい演算子をサポートしたいと考えています。これを分割する一つの方法は、乗算と除算を別々の垂直またはサブ機能として実装することです。それらは共有のボタンのスタイリングや共有のバリデーションロジックなど、いくつかの重複があるかもしれません。
 
-### Splitting Horizontally & Vertically {#splitting-grid}
+### 横にも縦にも分割する {#splitting-grid}
 
-To take this a step further, you could combine these approaches and chart out an
-implementation plan like this, where each cell is its own standalone CL.
-Starting from the model (at the bottom) and working up to the client:
+これをさらに一歩進めて、これらのアプローチを組み合わせ、各セルが独自のスタンドアローンなCLであるような実装計画をこのようにチャート化することができます。モデル（一番下）から始めてクライアントに至るまで：
 
-| Layer   | Feature: Multiplication   | Feature: Division               |
-| ------- | ------------------------- | ------------------------------- |
-| Client  | Add button                | Add button                      |
-| API     | Add endpoint              | Add endpoint                    |
-| Service | Implement transformations | Share transformation logic with |
-:         :                           : multiplication                  :
-| Model   | Add proto definition      | Add proto definition            |
+| 層     | 機能：乗算               | 機能：除算                      |
+| ------ | ------------------------ | -------------------------------- |
+| クライアント | ボタンを追加            | ボタンを追加                    |
+| API    | エンドポイントを追加      | エンドポイントを追加            |
+| サービス | 変換を実装              | 乗算とロジックを共有            |
+| モデル  | プロトの定義を追加        | プロトの定義を追加              |
 
-## Separate Out Refactorings {#refactoring}
+## リファクタリングを別にする {#refactoring}
 
-It's usually best to do refactorings in a separate CL from feature changes or
-bug fixes. For example, moving and renaming a class should be in a different CL
-from fixing a bug in that class. It is much easier for reviewers to understand
-the changes introduced by each CL when they are separate.
+一般的に、リファクタリングは機能の変更やバグ修正から別のCLで行う方が良いです。例えば、クラスを移動して名前を変更する作業は、そのクラスに関するバグを修正する作業とは別のCLで行うべきです。各CLによって導入された変更を理解することが、それらが別れている場合にはるかに容易です。
 
-Small cleanups such as fixing a local variable name can be included inside of a
-feature change or bug fix CL, though. It's up to the judgment of developers and
-reviewers to decide when a refactoring is so large that it will make the review
-more difficult if included in your current CL.
+ローカル変数の名前を修正するような小さなクリーンアップは、機能の変更やバグ修正のCL内に含めることもできます。リファクタリングが大きすぎてレビューが難しくなる場合は、開発者とレビュアーが判断するときに、そのリファクタリングを現在のCLに含めるべきかどうかを決定する必要があります。
 
-## Keep related test code in the same CL {#test_code}
+## 関連するテストコードを同じCLに保持する {#test_code}
 
-CLs should include related test code. Remember that [smallness](#what_is_small)
-here refers the conceptual idea that the CL should be focused and is not a
-simplistic function on line count.
+CLは関連するテストコードを含むべきです。[小ささ](#what_is_small)はここでは、CLが焦点を絞っているべきであり、行数に基づく単純な関数ではない、という概念的なアイデアに言及しています。
 
-A CL that adds or changes logic should be accompanied by new or updated tests
-for the new behavior. Pure refactoring CLs (that aren't intended to change
-behavior) should also be covered by tests; ideally, these tests already exist,
-but if they don't, you should add them.
+新しいロジックを追加するか変更するCLは、新しい挙動に対する新規または更新されたテストに伴うべきです。純粋なリファクタリングのCL（挙動を変更する意図がない）もテストでカバーされるべきです。理想的には、これらのテストはすでに存在していますが、存在しない場合は追加するべきです。
 
-*Independent* test modifications can go into separate CLs first, similar to the
-[refactorings guidelines](#refactoring). That includes:
+*独立した*テストの変更は、最初に別のCLで行くことができます。これには以下が含まれます：
 
-*   Validating pre-existing, submitted code with new tests.
-    *   Ensures that important logic is covered by tests.
-    *   Increases confidence in subsequent refactorings on affected code. For
-        example, if you want to refactor code that isn't already covered by
-        tests, submitting test CLs *before* submitting refactoring CLs can
-        validate that the tested behavior is unchanged before and after the
-        refactoring.
-*   Refactoring the test code (e.g. introduce helper functions).
-*   Introducing larger test framework code (e.g. an integration test).
+* 既存の、提出済みのコードを新しいテストで検証。
+  * 重要なロジックがテストでカバーされていることを確保。
+  * 影響を受けるコードに対する後続のリファクタリングに対する信頼を高める。例えば、すでにテストでカバーされていないコードをリファクタリングする場合、リファクタリングのCLを提出する*前に*テストのCLを提出することで、テストされた挙動がリファクタリング前後で変更されていないことを確認できます。
+* テストコードのリファクタリング（例：ヘルパー関数を導入）。
+* より大きなテストフレームワークのコードを導入（例：統合テスト）。
 
-## Don't Break the Build {#break}
+## ビルドを壊さない {#break}
 
-If you have several CLs that depend on each other, you need to find a way to
-make sure the whole system keeps working after each CL is submitted. Otherwise
-you might break the build for all your fellow developers for a few minutes
-between your CL submissions (or even longer if something goes wrong unexpectedly
-with your later CL submissions).
+お互いに依存する複数のCLがある場合、各CLが提出された後に全体のシステムが正常に機能し続け
 
-## Can't Make it Small Enough {#cant}
+るようにする必要があります。特に、あなたのCLが他の開発者に影響を与える可能性がある場合、ビルドやテストが壊れると、その影響は極めて大きくなります。
 
-Sometimes you will encounter situations where it seems like your CL *has* to be
-large. This is very rarely true. Authors who practice writing small CLs can
-almost always find a way to decompose functionality into a series of small
-changes.
+ビルドを壊さないためには、以下の手段が考えられます：
 
-Before writing a large CL, consider whether preceding it with a refactoring-only
-CL could pave the way for a cleaner implementation. Talk to your teammates and
-see if anybody has thoughts on how to implement the functionality in small CLs
-instead.
+- **フラグによる制御**: 新しいコードをフラグで制御することで、デフォルトでは実行されないようにします。これにより、CLが提出された後でも既存のテストが壊れることはありません。
+- **スタブとインターフェース**: 新しいコードが依存するコードをスタブやインターフェースで置き換えます。これにより、新しいコードが完全に機能する前でも、既存のコードは壊れません。
+- **依存関係の逆転**: 依存関係が一方通行になるように新旧のコードを調整します。例えば、既存のコードが新しいコードを呼び出すのではなく、新しいコードが既存のコードを呼び出すようにします。
+- **小さな一歩を繰り返す**: 大きな機能を小さな部分に分け、その小さな部分を独立して提出します。各部分が提出されると、システムは新しい機能に向けて小さな一歩進むだけであり、大きな変更が一度に行われることはありません。
+- **テスト**: 提出前に全てのテストが通ることを確認します。これにより、提出したCLがビルドを壊す可能性が大幅に減ります。
 
-If all of these options fail (which should be extremely rare) then get consent
-from your reviewers in advance to review a large CL, so they are warned about
-what is coming. In this situation, expect to be going through the review process
-for a long time, be vigilant about not introducing bugs, and be extra diligent
-about writing tests.
+## まとめ {#conclusion}
 
-Next: [How to Handle Reviewer Comments](handling-comments.md)
+小さなCLは高品質なソフトウェアを効率的に作成する上で非常に有用です。これはレビュアーによる詳細なレビューを容易にし、バグの導入を防ぎます。さらに、小さなCLは却下された場合のリスクを低減し、マージの複雑さを減らします。
+
+CLを小さく保つための具体的な戦略としては、CLを互いに積み重ねて作成する、ファイルや機能、層によってCLを分割する、リファクタリングと機能の変更を別のCLで行う、関連するテストコードを同じCLに保持する、ビルドを壊さないようにする、などがあります。
+
+これらのガイドラインは一般的なものであり、特定のケースには必ずしも当てはまらない場合もあります。しかし、これらの原則を理解し適用することで、より効率的な開発プロセスと高品質なコードベースの両方を実現できるでしょう。

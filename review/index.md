@@ -1,70 +1,50 @@
-# Code Review Developer Guide
+# コードレビュー開発者ガイド
 
-## Introduction {#intro}
+## 序論 {#intro}
 
-A code review is a process where someone other than the author(s) of a piece of
-code examines that code.
+コードレビューとは、コードの著者以外の誰かがそのコードを詳しく調べるプロセスです。
 
-At Google, we use code review to maintain the quality of our code and products.
+Googleでは、コードと製品の品質を維持するためにコードレビューを使用しています。
 
-This documentation is the canonical description of Google's code review
-processes and policies.
+この文書は、Googleのコードレビューのプロセスとポリシーの正式な説明です。
 
+このページは、コードレビュープロセスの概要です。このガイドには他にも2つの大きな文書が含まれています：
 
+-   **[コードレビューのやり方](reviewer/index.md)**：コードレビュアー向けの詳細なガイド。
+-   **[CL著者のガイド](developer/index.md)**：レビュー中のCLを持つ開発者向けの詳細なガイド。
 
-This page is an overview of our code review process. There are two other large
-documents that are a part of this guide:
+## コードレビュアーは何を見るべきか？ {#look_for}
 
--   **[How To Do A Code Review](reviewer/index.md)**: A detailed guide for code
-    reviewers.
--   **[The CL Author's Guide](developer/index.md)**: A detailed guide for
-    developers whose CLs are going through review.
+コードレビューでは、以下の点に注意する必要があります：
 
-## What Do Code Reviewers Look For? {#look_for}
+-   **設計**：コードはよく設計されており、システムに適していますか？
+-   **機能性**：コードは著者が意図した通りに動作しますか？コードの動作は、そのユーザーにとって良いものですか？
+-   **複雑性**：コードをよりシンプルにできますか？未来にこのコードに遭遇した別の開発者は、簡単に理解し使用できますか？
+-   **テスト**：コードには正確でよく設計された自動テストがありますか？
+-   **命名**：開発者は変数、クラス、メソッドなどに明確な名前を選びましたか？
+-   **コメント**：コメントは明確で有用ですか？
+-   **スタイル**：コードは我々の[スタイルガイド](http://google.github.io/styleguide/)に従っていますか？
+-   **文書化**：開発者は関連する文書も更新しましたか？
 
-Code reviews should look at:
+詳細については、**[コードレビューのやり方](reviewer/index.md)**を参照してください。
 
--   **Design**: Is the code well-designed and appropriate for your system?
--   **Functionality**: Does the code behave as the author likely intended? Is
-    the way the code behaves good for its users?
--   **Complexity**: Could the code be made simpler? Would another developer be
-    able to easily understand and use this code when they come across it in the
-    future?
--   **Tests**: Does the code have correct and well-designed automated tests?
--   **Naming**: Did the developer choose clear names for variables, classes,
-    methods, etc.?
--   **Comments**: Are the comments clear and useful?
--   **Style**: Does the code follow our
-    [style guides](http://google.github.io/styleguide/)?
--   **Documentation**: Did the developer also update relevant documentation?
+### 最適なレビュアーの選び方 {#best_reviewers}
 
-See **[How To Do A Code Review](reviewer/index.md)** for more information.
+一般的に、合理的な時間内にレビューに対応できる*最良*のレビュアーを見つけることが望ましいです。
 
-### Picking the Best Reviewers {#best_reviewers}
+最良のレビュアーとは、書いたコードに対して最も徹底的かつ正確なレビューを提供できる人物です。
+通常、これはコードのオーナーであり、OWNERSファイルに記載されている人物である場合もあり、ない場合もあります。
+場合によっては、CLの異なる部分を異なる人々にレビューしてもらうことがあります。
 
-In general, you want to find the *best* reviewers you can who are capable of
-responding to your review within a reasonable period of time.
+理想的なレビュアーが見つかったが利用できない場合は、少なくともその人物をCCに追加するべきです。
 
-The best reviewer is the person who will be able to give you the most thorough
-and correct review for the piece of code you are writing. This usually means the
-owner(s) of the code, who may or may not be the people in the OWNERS file.
-Sometimes this means asking different people to review different parts of the
-CL.
+### 対面でのレビュー（およびペアプログラミング） {#in_person}
 
-If you find an ideal reviewer but they are not available, you should at least CC
-them on your change.
+資格のある人物とペアプログラミングでコードを書いた場合、そのコードはレビューされたとみなされます。
 
-### In-Person Reviews (and Pair Programming) {#in_person}
+対面でのコードレビューも行うことができ、レビュアーが質問をし、変更の開発者が質問されたときにのみ発言します。
 
-If you pair-programmed a piece of code with somebody who was qualified to do a
-good code review on it, then that code is considered reviewed.
+## 参照 {#seealso}
 
-You can also do in-person code reviews where the reviewer asks questions and the
-developer of the change speaks only when spoken to.
-
-## See Also {#seealso}
-
--   [How To Do A Code Review](reviewer/index.md): A detailed guide for code
-    reviewers.
--   [The CL Author's Guide](developer/index.md): A detailed guide for developers
-    whose CLs are going through review.
+-   [コードレビューのやり方](reviewer/index.md)：コードレビュアー向けの詳細なガイド。
+-   [CL著者のガイド](developer/index.md)：レビュー中のCLを持つ開発者向けの詳細なガイド。

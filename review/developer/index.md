@@ -1,14 +1,9 @@
-# The CL author's guide to getting through code review
+# コードレビューをスムーズに進めるためのCL作成者ガイド
 
-The pages in this section contain best practices for developers going through
-code review. These guidelines should help you get through reviews faster and
-with higher-quality results. You don't have to read them all, but they are
-intended to apply to every Google developer, and many people have found it
-helpful to read the whole set.
+このセクションに含まれるページは、コードレビューを受ける開発者向けのベストプラクティスを提供しています。これらのガイドラインは、より速く、より高品質な結果でレビューを通過するのに役立つはずです。すべてを読む必要はありませんが、これらはGoogleの開発者全員に適用されることを目的としており、多くの人々が全体を読むことで有用であると感じています。
 
--   [Writing Good CL Descriptions](cl-descriptions.md)
--   [Small CLs](small-cls.md)
--   [How to Handle Reviewer Comments](handling-comments.md)
+-   [良いCLの説明を書く](cl-descriptions.md)
+-   [小さなCL](small-cls.md)
+-   [レビュアーからのコメントの取り扱い](handling-comments.md)
 
-See also [How to Do a Code Review](../reviewer/index.md), which gives detailed
-guidance for code reviewers.
+詳細なコードレビュアー向けのガイダンスについては、[コードレビューの方法](../reviewer/index.md)も参照してください。

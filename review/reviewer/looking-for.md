@@ -1,240 +1,173 @@
-# What to look for in a code review
+# コードレビューで注目すべき点
 
+注: これらのポイントを考慮する際には、常に[コードレビューの基準](standard.md)を考慮してください。
 
+## 設計
 
-Note: Always make sure to take into account
-[The Standard of Code Review](standard.md) when considering each of these
-points.
+レビューで最も重要な点は、CL（変更リスト）の全体的な設計です。
+CL内の各コードの相互作用は理にかなっていますか？
+この変更はあなたのコードベースに適しているのか、それともライブラリに適していますか？
+システム全体とよく統合されていますか？
+今、この機能を追加するのは良いタイミングですか？
 
-## Design
+## 機能性
 
-The most important thing to cover in a review is the overall design of the CL.
-Do the interactions of various pieces of code in the CL make sense? Does this
-change belong in your codebase, or in a library? Does it integrate well with the
-rest of your system? Is now a good time to add this functionality?
+このCLは、開発者が意図した通りに機能していますか？
+開発者が意図したものは、このコードのユーザーにとって有用ですか？
+「ユーザー」とは通常、エンドユーザー（変更に影響を受ける場合）と開発者（将来このコードを「使用」する人）の両方を指します。
 
-## Functionality
+大抵の場合、開発者はCLがコードレビューに到達するまでに十分にテストを行い、正しく動作するようにしています。
+しかし、レビュアーとしては、エッジケースについて考え、並行処理の問題を探し、ユーザーのように考え、コードを読むだけでバグがないか確認する必要があります。
 
-Does this CL do what the developer intended? Is what the developer intended good
-for the users of this code? The "users" are usually both end-users (when they
-are affected by the change) and developers (who will have to "use" this code in
-the future).
+**UIの変更**のように、ユーザーに直接影響を与える場合、レビュアーがCLの動作を確認することが最も重要です。
+コードを読んでいるだけでは、一部の変更がユーザーにどのような影響を与えるかを理解するのは難しいです。
+そのような変更については、CLをパッチして自分で試すのが不便な場合、開発者に機能のデモをしてもらうことができます。
 
-Mostly, we expect developers to test CLs well-enough that they work correctly by
-the time they get to code review. However, as the reviewer you should still be
-thinking about edge cases, looking for concurrency problems, trying to think
-like a user, and making sure that there are no bugs that you see just by reading
-the code.
+また、CL内で**並行プログラミング**が行われている場合、デッドロックや競合状態が理論的に発生する可能性がある場合、機能性について特に考える必要があります。
+このような問題は、コードを実行するだけでは非常に検出しにくく、通常は誰か（開発者とレビュアーの両方）が慎重に考える必要があります。
+（これは、競合状態やデッドロックが可能な並行モデルを使用しないようにするもう一つの良い理由でもあります。それにより、コードレビューを行ったり、コードを理解したりするのが非常に複雑になります。）
 
-You *can* validate the CL if you want—the time when it's most important for a
-reviewer to check a CL's behavior is when it has a user-facing impact, such as a
-**UI change**. It's hard to understand how some changes will impact a user when
-you're just reading the code. For changes like that, you can have the developer
-give you a demo of the functionality if it's too inconvenient to patch in the CL
-and try it yourself.
+## 複雑さ
 
-Another time when it's particularly important to think about functionality
-during a code review is if there is some sort of **parallel programming** going
-on in the CL that could theoretically cause deadlocks or race conditions. These
-sorts of issues are very hard to detect by just running the code and usually
-need somebody (both the developer and the reviewer) to think through them
-carefully to be sure that problems aren't being introduced. (Note that this is
-also a good reason not to use concurrency models where race conditions or
-deadlocks are possible—it can make it very complex to do code reviews or
-understand the code.)
+CLは必要以上に複雑ですか？
+この点は、CLの各レベルで確認してください。
+個々の行は複雑すぎますか？
+関数は複雑すぎますか？
+クラスは複雑すぎますか？
+「複雑すぎる」とは通常、**「コードの読者がすぐに理解できない」**ことを意味します。
+また、**「開発者がこのコードを呼び出すか修正する際にバグを導入する可能性が高い」**とも言えます。
 
-## Complexity
+特定のタイプの複雑さは**過度な設計（オーバーエンジニアリング）**です。
+開発者がコードを必要以上に一般的にしていたり、現在のシステムには必要のない機能を追加していたりする場合です。
+レビュアーは、過度な設計に特に注意を払う必要があります。
+開発者に、現在解決する必要があると確信している問題を解決するように促してください。
+未来に解決する必要があるかもしれないと開発者が推測する問題は、その問題が実際に到来し、その実際の形と要件が物理的な宇宙で見えるようになったら解決してください。
 
-Is the CL more complex than it should be? Check this at every level of the
-CL—are individual lines too complex? Are functions too complex? Are classes too
-complex? "Too complex" usually means **"can't be understood quickly by code
-readers."** It can also mean **"developers are likely to introduce bugs when
-they try to call or modify this code."**
+## テスト
 
-A particular type of complexity is **over-engineering**, where developers have
-made the code more generic than it needs to be, or added functionality that
-isn't presently needed by the system. Reviewers should be especially vigilant
-about over-engineering. Encourage developers to solve the problem they know
-needs to be solved *now*, not the problem that the developer speculates *might*
-need to be solved in the future. The future problem should be solved once it
-arrives and you can see its actual shape and requirements in the physical
-universe.
+変更に適したユニットテスト、統合テスト、またはエンドツーエンドテストを要求してください。
+一般に、テストは緊急事態を処理している場合を除き、本番コードと同じCLに追加されるべきです。
 
-## Tests
+CL内のテストが正確で、理にかなっており、有用であることを確認してください。
+テスト自体は自分自身をテストするわけではありませんし、私たちはほとんどテストのためのテストを書きません。
+人間がテストが有効であることを確認する必要があります。
 
-Ask for unit, integration, or end-to-end
-tests as appropriate for the change. In general, tests should be added in the
-same CL as the production code unless the CL is handling an
-[emergency](../emergencies.md).
+テストは、コードが壊れたときに実際に失敗しますか？
+コードが下で変更された場合、テストは偽陽性を出すようになりますか？
+各テストはシンプルで有用なアサーションを行っていますか？
+テストは、異なるテストメソッドの間で適切に分離されていますか？
 
-Make sure that the tests in the CL are correct, sensible, and useful. Tests do
-not test themselves, and we rarely write tests for our tests—a human must ensure
-that tests are valid.
+テストもメンテナンスが必要なコードであることを忘れないでください。
+主要なバイナリの一部でないからといって、テストでの複雑さを受け入れないでください。
 
-Will the tests actually fail when the code is broken? If the code changes
-beneath them, will they start producing false positives? Does each test make
-simple and useful assertions? Are the tests separated appropriately between
-different test methods?
+## 名前付け
 
-Remember that tests are also code that has to be maintained. Don't accept
-complexity in tests just because they aren't part of the main binary.
+開発者はすべてに対して良い名前を選びましたか？
+良い名前とは、項目が何であるか、または何をするかを完全に伝えるのに十分な長さであり、読むのが難しくなるほど長くはありません。
 
-## Naming
+## コメント
 
-Did the developer pick good names for everything? A good name is long enough to
-fully communicate what the item is or does, without being so long that it
-becomes hard to read.
+開発者は理解しやすい英語で明確なコメントを書きましたか？
+すべてのコメントが実際に必要ですか？
+通常、コメントはコードが存在する**理由**を説明する際に有用であり、コードが**何をしているのか**を説明している場合はありません。
+コードが自体を説明するのに十分に明確でない場合、コードをよりシンプルにする必要があります。
+例外もありますが（正規表現や複雑なアルゴリズムは、何をしているのかを説明するコメントが非常に有益であることが多いです）、ほとんどの場合、コメントはコード自体が絶対に含むことができない情報、つまり決定の背後にある推論のためにあります。
 
-## Comments
+このCLより前のコメントも見ると役立つ場合があります。
+たとえば、この変更を行うことに対する警告をするコメントがあるか、TODOが今削除できるかなどです。
 
-Did the developer write clear comments in understandable English? Are all of the
-comments actually necessary? Usually comments are useful when they **explain
-why** some code exists, and should not be explaining *what* some code is doing.
-If the code isn't clear enough to explain itself, then the code should be made
-simpler. There are some exceptions (regular expressions and complex algorithms
-often benefit greatly from comments that explain what they're doing, for
-example) but mostly comments are for information that the code itself can't
-possibly contain, like the reasoning behind a decision.
+コメントは、クラス、モジュール、または関数の**文書化**とは異なります。
+文書化は、コードの一部の目的、使用方法、使用時の動作を表現するべきです。
 
-It can also be helpful to look at comments that were there before this CL. Maybe
-there is a TODO that can be removed now, a comment advising against this change
-being made, etc.
+## スタイル
 
-Note that comments are different from *documentation* of classes, modules, or
-functions, which should instead express the purpose of a piece of code, how it
-should be used, and how it behaves when used.
+Googleでは、主要な言語すべて、さらにはほとんどのマイナーな言語に対しても[スタイルガイド](http://google.github.io/styleguide/)があります。
+CLが適切なスタイルガイドに従っていることを確認してください。
 
-## Style
+スタイルガイドにないスタイルポイントを改善したい場合は、コメントの先頭に「Nit:」と付けて、それが細かい指摘であり、コードを改善すると思うが必須ではないと開発者に知らせてください。
+個人的なスタイルの好みだけに基づいてCLの提出をブロックしないでください。
 
-We have [style guides](http://google.github.io/styleguide/) at Google for all
-of our major languages, and even for most of the minor languages. Make sure the
-CL follows the appropriate style guides.
+CLの著者は、他の変更と組み合わせて主要なスタイルの変更を含めるべきではありません。
+これは、CLで何が変更されているのかを見るのが難しくなるだけでなく、マージやロールバックがより複雑になり、他の問題も引き起こします。
+たとえば、著者がファイル全体を再フォーマットしたい場合、まずその再フォーマットだけを1つのCLとして送り、その後に機能的な変更を別のCLで送ってもらってください。
 
-If you want to improve some style point that isn't in the style guide, prefix
-your comment with "Nit:" to let the developer know that it's a nitpick that you
-think would improve the code but isn't mandatory. Don't block CLs from being
-submitted based only on personal style preferences.
+## 一貫性
 
-The author of the CL should not include major style changes combined with other
-changes. It makes it hard to see what is being changed in the CL, makes merges
-and rollbacks more complex, and causes other problems. For example, if the
-author wants to reformat the whole file, have them send you just the
-reformatting as one CL, and then send another CL with their functional changes
-after that.
+既存のコードがスタイルガイドと一貫性がない場合はどうすればよいですか？
+私たちの[コードレビューの原則](standard.md#principles)によれば、スタイルガイドは絶対的な権威です。
+スタイルガイドで何かが必要とされている場合、CLはそのガイドラインに従うべきです。
 
-## Consistency
+場合によっては、スタイルガイドは推奨事項を提供するだけで、要件を宣言しないことがあります。
+このような場合、新しいコードが推奨事項と一致するか、周囲のコードと一致するかは判断の問題です。
+地元の不一致があまりにも混乱を招くようであれば、スタイルガイドに従う傾向があります。
 
-What if the existing code is inconsistent with the style guide? Per our
-[code review principles](standard.md#principles), the style guide is the
-absolute authority: if something is required by the style guide, the CL should
-follow the guidelines.
+他のルールが適用されない場合、著者は既存のコードと一貫性を維持すべきです。
 
-In some cases, the style guide makes recommendations rather than declaring
-requirements. In these cases, it's a judgment call whether the new code should
-be consistent with the recommendations or the surrounding code. Bias towards
-following the style guide unless the local inconsistency would be too confusing.
+いずれにせよ、著者に既存のコードをクリーンアップするためのバグを登録し、TODOを追加するように促してください。
 
-If no other rule applies, the author should maintain consistency with the
-existing code.
+## 文書化
 
-Either way, encourage the author to file a bug and add a TODO for cleaning up
-existing code.
+CLがユーザーがコードをビルド、テスト、対話、リリースする方法を変更する場合、関連する文書も更新しているか確認してください。
+これにはREADME、g3docのページ、生成された参照ドキュメントなどが含まれます。
+CLがコードを削除または非推奨にする場合、文書も削除する必要があるかもしれません。
+文書が不足している場合は、それを要求してください。
 
-## Documentation
+## すべての行 {#every-line}
 
-If a CL changes how users build, test, interact with, or release code, check to
-see that it also updates associated documentation, including
-READMEs, g3doc pages, and any generated
-reference docs. If the CL deletes or deprecates code, consider whether the
-documentation should also be deleted.
-If documentation is
-missing, ask for it.
+一般的なケースでは、レビューが割り当てられた**すべての行**のコードを見てください。
+データファイル、生成されたコード、または大きなデータ構造などは時々スキャンできますが、人が書いたクラス、関数、またはコードブロックをスキャンして、その中が大丈夫だと仮定しないでください。
+明らかに一部のコードは他のコードよりも慎重な精査が必要ですが、少なくともすべてのコードが何をしているのかを**理解**していることを確認してください。
 
-## Every Line {#every-line}
+コードを読むのがあまりにも困難で、レビューが遅れている場合は、開発者にそのことを知らせて、それを明確にするまでレビューを待ってください。
+Googleでは優れたソフトウェアエンジニアを採用しています、そしてあなたもその一人です。
+あなたがコードを理解できないなら、他の開発者も同様に理解できない可能性が非常に高いです。
+ですので、開発者にそれを明確にするように頼むことで、将来の開発者もこのコードを理解する助けとなります。
 
-In the general case, look at *every* line of code that you have been assigned to
-review. Some things like data files, generated code, or large data structures
-you can scan over sometimes, but don't scan over a human-written class,
-function, or block of code and assume that what's inside of it is okay.
-Obviously some code deserves more careful scrutiny than other code&mdash;that's
-a judgment call that you have to make&mdash;but you should at least be sure that
-you *understand* what all the code is doing.
+コードを理解しているが、レビューの一部を行う資格がないと感じる場合は、特にプライバシー、セキュリティ、並行処理、アクセシビリティ、国際化などの複雑な問題に対して、CLに資格のあるレビュアーがいることを確認してください。
 
-If it's too hard for you to read the code and this is slowing down the review,
-then you should let the developer know that
-and wait for them to clarify it before you try to review it. At Google, we hire
-great software engineers, and you are one of them. If you can't understand the
-code, it's very likely that other developers won't either. So you're also
-helping future developers understand this code, when you ask the developer to
-clarify it.
+### 例外 {#every-line-exceptions}
 
-If you understand the code but you don't feel qualified to do some part of the
-review, [make sure there is a reviewer](#every-line-exceptions) on the CL who is
-qualified, particularly for complex issues such as privacy, security,
-concurrency, accessibility, internationalization, etc.
+すべての行をレビューすることが意味をなさない場合はどうすればよいですか？
+たとえば、あなたはCLの複数のレビュアーの一人であり、以下のように求められる場合があります。
 
-### Exceptions {#every-line-exceptions}
+*   大きな変更の一部である特定のファイルだけをレビューする。
+*   CLの特定の側面だけをレビューする、例えば高レベルの設計、プライバシーやセキュリティの影響など。
 
-What if it doesn't make sense for you to review every line? For example, you are
-one of multiple reviewers on a CL and may be asked:
+これらの場合、どの部分をレビューしたかをコメントで明示してください。
+[コメント付きでLGTMを与える](speed.md#lgtm-with-comments)ことを好みます。
 
-*   To review only certain files that are part of a larger change.
-*   To review only certain aspects of the CL, such as the high-level design,
-    privacy or security implications, etc.
+代わりに、他のレビュアーがCLの他の部分をレビューしたことを確認した後でLGTMを付与したい場合は、このことを明示的にコメントで示して期待値を設定してください。
+CLが望ましい状態に達したら、[迅速に応答](speed.md#responses)するように目指してください。
 
-In these cases, note in a comment which parts you reviewed. Prefer giving
-[LGTM with comments](speed.md#lgtm-with-comments)
-.
+## 文脈
 
-If you instead wish to grant LGTM after confirming that other reviewers have
-reviewed other parts of the CL, note this explicitly in a comment to set
-expectations. Aim to [respond quickly](speed.md#responses) once the CL has
-reached the desired state.
+CLを広い文脈で見ることはしばしば有用です。
+通常、コードレビューツールは変更されている部分の周囲に数行のコードしか表示しません。
+変更が実際に意味を成すためには、全体のファイルを確認する必要がある場合もあります。
+たとえば、4行の新しい行が追加されているだけかもしれませんが、全体のファイルを見ると、それらの4行が今は小さなメソッドに分割されるべき50行のメソッドにあることに気付くかもしれません。
 
-## Context
+また、CLをシステム全体の文脈で考えることも有用です。
+このCLはシステムのコードヘルスを向上させていますか、それともシステム全体をより複雑にし、よりテストされていない状態にしていますか？
+**システムのコードヘルスを劣化させるCLを受け入れてはいけません。**
+ほとんどのシステムは、累積する多くの小さな変更によって複雑になるため、新しい変更でも小さな複雑さを防ぐことが重要です。
 
-It is often helpful to look at the CL in a broad context. Usually the code
-review tool will only show you a few lines of code around the parts that are
-being changed. Sometimes you have to look at the whole file to be sure that the
-change actually makes sense. For example, you might see only four new lines
-being added, but when you look at the whole file, you see those four lines are
-in a 50-line method that now really needs to be broken up into smaller methods.
+## 良い点 {#good-things}
 
-It's also useful to think about the CL in the context of the system as a whole.
-Is this CL improving the code health of the system or is it making the whole
-system more complex, less tested, etc.? **Don't accept CLs that degrade the code
-health of the system.** Most systems become complex through many small changes
-that add up, so it's important to prevent even small complexities in new
-changes.
+CLで何か良い点を見つけた場合、特に自分のコメントに素晴らしい方法で対応した場合は、開発者に伝えてください。
+コードレビューはよく間違いに焦点を当てがちですが、良い実践に対する励ましと感謝も提供するべきです。
+指導する上で、開発者が何を間違っていたかを伝えるよりも、何を正しくしたかを伝えることが時にはさらに価値があることもあります。
 
-## Good Things {#good-things}
+## まとめ
 
-If you see something nice in the CL, tell the developer, especially when they
-addressed one of your comments in a great way. Code reviews often just focus on
-mistakes, but they should offer encouragement and appreciation for good
-practices, as well. It’s sometimes even more valuable, in terms of mentoring, to
-tell a developer what they did right than to tell them what they did wrong.
+コードレビューを行う際には、以下を確認してください。
 
-## Summary
+-   コードはよく設計されている。
+-   機能性は、このコードのユーザーにとって良い。
+-   UIの変更が理にかなっており、ユーザーに有益である。
+-   並行プログラムの問題が特に考慮されている。
+-   コードは複雑すぎない。
+-   良い名前とコメントが使われている。
+-   コードはスタイルガイドに従っている。
+-   文書化が適切である。
 
-In doing a code review, you should make sure that:
-
--   The code is well-designed.
--   The functionality is good for the users of the code.
--   Any UI changes are sensible and look good.
--   Any parallel programming is done safely.
--   The code isn't more complex than it needs to be.
--   The developer isn't implementing things they *might* need in the future but
-    don't know they need now.
--   Code has appropriate unit tests.
--   Tests are well-designed.
--   The developer used clear names for everything.
--   Comments are clear and useful, and mostly explain *why* instead of *what*.
--   Code is appropriately documented (generally in g3doc).
--   The code conforms to our style guides.
-
-Make sure to review **every line** of code you've been asked to review, look at
-the **context**, make sure you're **improving code health**, and compliment
-developers on **good things** that they do.
-
-Next: [Navigating a CL in Review](navigate.md)
+そして最後に、CLがシステム全体のコードヘルスを向上させていることを確認してください。

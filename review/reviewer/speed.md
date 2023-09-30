@@ -1,144 +1,68 @@
-# Speed of Code Reviews
+# コードレビューの速度
 
+## なぜコードレビューは速くなければならないか？ {#why}
 
+**Googleでは、個々の開発者がコードを書く速度よりも、開発者チーム全体が製品を生産する速度を最適化しています。** 個々の開発速度も重要ですが、チーム全体の速度が*より*重要です。
 
-## Why Should Code Reviews Be Fast? {#why}
+コードレビューが遅いと、いくつかの問題が発生します：
 
-**At Google, we optimize for the speed at which a team of developers can produce
-a product together**, as opposed to optimizing for the speed at which an
-individual developer can write code. The speed of individual development is
-important, it's just not *as* important as the velocity of the entire team.
+* **チーム全体の速度が低下します。** はい、レビューにすぐに対応しない個々の開発者は他の作業を進めます。しかし、レビューと再レビューを待っている間に、チーム全体の新機能やバグ修正が日、週、または月単位で遅れます。
+* **開発者がコードレビュープロセスに抗議を始めます。** レビュアーが数日ごとにしか反応せず、その都度CLに大きな変更を要求すると、開発者にとっては挫折することがあります。これはしばしば「レビュアーが厳しすぎる」という苦情として表れます。しかし、レビュアーが開発者がアップデートするたびに*迅速に*反応すると、苦情は消える傾向があります。**コードレビュープロセスに対するほとんどの苦情は、実際にはプロセスを速くすることで解決されます。**
+* **コードの健全性に影響を与える可能性があります。** レビューが遅いと、開発者が最善でないCLを提出する圧力が高まります。遅いレビューは、コードのクリーンアップ、リファクタリング、既存のCLへのさらなる改善も阻害します。
 
-When code reviews are slow, several things happen:
+## コードレビューはどれくらい速くすべきか？ {#fast}
 
-*   **The velocity of the team as a whole is decreased.** Yes, the individual
-    who doesn't respond quickly to the review gets other work done. However, new
-    features and bug fixes for the rest of the team are delayed by days, weeks,
-    or months as each CL waits for review and re-review.
-*   **Developers start to protest the code review process.** If a reviewer only
-    responds every few days, but requests major changes to the CL each time,
-    that can be frustrating and difficult for developers. Often, this is
-    expressed as complaints about how "strict" the reviewer is being. If the
-    reviewer requests the *same* substantial changes (changes which really do
-    improve code health), but responds *quickly* every time the developer makes
-    an update, the complaints tend to disappear. **Most complaints about the
-    code review process are actually resolved by making the process faster.**
-*   **Code health can be impacted.** When reviews are slow, there is increased
-    pressure to allow developers to submit CLs that are not as good as they
-    could be. Slow reviews also discourage code cleanups, refactorings, and
-    further improvements to existing CLs.
+集中してタスクを行っていない場合、**コードレビューはその後すぐに行うべきです。**
 
-## How Fast Should Code Reviews Be? {#fast}
+**ビジネスデーで最大でも反応するべき時間は一日です**（つまり、翌朝の最初のこと）。
 
-If you are not in the middle of a focused task, **you should do a code review
-shortly after it comes in.**
+このガイドラインに従うと、典型的なCLは1日以内に複数回のレビュー（必要な場合）を受けることになります。
 
-**One business day is the maximum time it should take to respond** to a code
-review request (i.e., first thing the next morning).
+## 速度対中断 {#interruption}
 
-Following these guidelines means that a typical CL should get multiple rounds of
-review (if needed) within a single day.
+個々の速度がチーム速度よりも優先される唯一の時期があります。**コードを書くなどの集中したタスクの最中であれば、自分自身を中断してコードレビューを行わないでください。**
+研究によれば、中断された後に開発者がスムーズな開発の流れに戻るのには時間がかかることが示されています。したがって、コーディング中に自分自身を中断することは、他の開発者が少しコードレビューを待つよりも、実際にはチームにとって*より*コストがかかります。
 
-## Speed vs. Interruption {#interruption}
+代わりに、作業の中断点が来たときにレビューのリクエストに対応してください。これは、現在のコーディングタスクが完了した後、ランチ後、会議から戻った後、休憩室から戻った後など、あなたの作業で合理的な中断点が来たときです。
 
-There is one time where the consideration of personal velocity trumps team
-velocity. **If you are in the middle of a focused task, such as writing code,
-don't interrupt yourself to do a code review.**
-Research has shown that it can
-take a long time for a developer to get back into a smooth flow of development
-after being interrupted. So interrupting yourself while coding is actually
-*more* expensive to the team than making another developer wait a bit for a code
-review.
+## 迅速な反応 {#responses}
 
-Instead, wait for a break point in your work before you respond to a request for
-review. This could be when your current coding task is completed, after lunch,
-returning from a meeting, coming back from the breakroom, etc.
+コードレビューの速度について話すとき、私たちが気にしているのは*反応時間*であり、CLが全体のレビューを経て提出されるまでにかかる時間ではありません。全体のプロセスも理想的には速くあるべきですが、**個々の反応が迅速に来ることの方が、全体のプロセスが速く進むことよりも重要です。**
 
-## Fast Responses {#responses}
+全体のレビュー*プロセス*が時々長くかかる場合でも、プロセス全体でレビュアーから迅速な反応があると、「遅い」コードレビューに対する開発者の挫折感が大幅に軽減されます。
 
-When we talk about the speed of code reviews, it is the *response* time that we
-are concerned with, as opposed to how long it takes a CL to get through the
-whole review and be submitted. The whole process should also be fast, ideally,
-but **it's even more important for the *individual responses* to come quickly
-than it is for the whole process to happen rapidly.**
+CLが来たときに完全なレビューを行う時間がない場合でも、開発者に対していつそれに取り組むかを知らせる迅速な反応を送ることができます、より迅速に反応できる他のレビュアーを提案する、または[初期の広範なコメントを提供する](navigate.md)ことができます。（注：これによってコーディングを中断する必要はありません。作業の合理的な中断点でこのような反応を送ってください。）
 
-Even if it sometimes takes a long time to get through the entire review
-*process*, having quick responses from the reviewer throughout the process
-significantly eases the frustration developers can feel with "slow" code
-reviews.
+**レビュアーが「LGTM」と言う際には、「このコードは[私たちの基準](standard.md)を満たしている」と確信している時間を十分に費やすことが重要です。** ただし、個々の反応は理想的には[速く](#fast)あるべきです。
 
-If you are too busy to do a full review on a CL when it comes in, you can still
-send a quick response that lets the developer know when you will get to it,
-suggest other reviewers who might be able to respond more quickly, or
-[provide some initial broad comments](navigate.md). (Note: none of this means
-you should interrupt coding even to send a response like this&mdash;send the
-response at a reasonable break point in your work.)
+## タイムゾーンをまたぐレビュー {#tz}
 
-**It is important that reviewers spend enough time on review that they are
-certain their "LGTM" means "this code meets [our standards](standard.md)."**
-However, individual responses should still ideally be [fast](#fast).
+タイムゾーンの違いに対処する際には、著者がその日の仕事を終える前に返信するように努力してください。もし彼らがすでにその日の仕事を終えている場合、次の日の仕事が始まる前にレビューが完了するように努力してください。
 
-## Cross-Time-Zone Reviews {#tz}
+## コメント付きLGTM {#lgtm-with-comments}
 
-When dealing with time zone differences, try to get back to the author while
-they have time to respond before the end of their working hours. If they have
-already finished work for the day, then try to make sure your review is done
-before they start work the next day.
+コードレビューを速く進めるために、レビュアーが解決されていないコメントを残しながらもLGTM/Approvalを与えるべき状況があります。これは次のいずれかに該当する場合です：
 
-## LGTM With Comments {#lgtm-with-comments}
+* レビュアーが、開発者がレビュアーの残りのコメントすべてに適切に対応すると確信している。
+* 残りの変更が小さいものであり、開発者によって*行わなくてもよい*。
 
-In order to speed up code reviews, there are certain situations in which a
-reviewer should give LGTM/Approval even though they are also leaving unresolved
-comments on the CL. This is done when either:
+レビュアーは、これらのオプションのいずれを意図しているのかを明示するべきです、それが他に明らかでない場合。
 
-*   The reviewer is confident that the developer will appropriately address all
-    the reviewer's remaining comments.
-*   The remaining changes are minor and don't *have* to be done by the
-    developer.
+コメント付きLGTMは、特に開発者とレビュアーが異なるタイムゾーンにいる場合、開発者が「LGTM、Approval」を得るために1日待たされることがないようにするために特に検討する価値があります。
 
-The reviewer should specify which of these options they intend, if it is not
-otherwise clear.
+## 大きなCL {#large}
 
-LGTM With Comments is especially worth considering when the developer and
-reviewer are in different time zones and otherwise the developer would be
-waiting for a whole day just to get "LGTM, Approval."
+誰かがあなたにレビューを行う時間がいつになるかわからないほど大きなコードレビューを送ってきた場合、通常の反応は、開発者に[CLをいくつかの小さなCLに分割する](../developer/small-cls.md)ように頼むことです。これは通常、可能でありレビュアーにとって非常に有用です、開発者から追加の作業が必要であっても。
 
-## Large CLs {#large}
+CLが*小さなCLに分割できない*場合、そしてあなたがその全体を迅速にレビューする時間がない場合、少なくともCL全体の設計についていくつかのコメントを書いて、それを開発者に改善のために送り返してください。レビュアーとしてのあなたの目標の1つは、開発者を常にブロック解除するか、何らかの形で迅速にさらなるアクションを取ることを可能にすることであるべきです、それを行うためにコードの健全性を犠牲にすることなく。
 
-If somebody sends you a code review that is so large you're not sure when you
-will be able to have time to review it, your typical response should be to ask
-the developer to
-[split the CL into several smaller CLs](../developer/small-cls.md) that build on
-each other, instead of one huge CL that has to be reviewed all at once. This is
-usually possible and very helpful to reviewers, even if it takes additional work
-from the developer.
+## 時間とともにコードレビューが改善される {#time}
 
-If a CL *can't* be broken up into smaller CLs, and you don't have time to review
-the entire thing quickly, then at least write some comments on the overall
-design of the CL and send it back to the developer for improvement. One of your
-goals as a reviewer should be to always unblock the developer or enable them to
-take some sort of further action quickly, without sacrificing code health to do
-so.
+これらのガイドラインに従い、コードレビューで厳格であれば、コードレビュープロセス全体が時間とともにますます速くなる傾向があるはずです。開発者は健全なコードに必要なことを学び、最初から素晴らしいCLを送り、レビュー時間がますます少なくなります。レビュアーは迅速に反応し、レビュープロセスに不必要な遅延を加えないように学びます。
+ただし、**速度の想像上の改善のために[コードレビュー基準](standard.md)や品質を妥協してはいけません**—長期的には実際に何も速く進むわけではありません。
 
-## Code Review Improvements Over Time {#time}
+## 緊急事態
 
-If you follow these guidelines and you are strict with your code reviews, you
-should find that the entire code review process tends to go faster and faster
-over time. Developers learn what is required for healthy code, and send you CLs
-that are great from the start, requiring less and less review time. Reviewers
-learn to respond quickly and not add unnecessary latency into the review
-process.
-But **don't compromise on
-the [code review standards](standard.md) or quality for an imagined improvement
-in velocity**&mdash;it's not actually going to make anything happen more
-quickly, in the long run.
+また、CLが*全体の*レビュープロセスを非常に迅速に通過しなければならない、そして品質ガイドラインが緩和される[緊急事態](../emergencies.md)もあります。ただし、どの状況が実際に緊急事態として適格であり、どの状況がそうでないかの説明については、[何が緊急事態か？](../emergencies.md#what)を参照してください。
 
-## Emergencies
-
-There are also [emergencies](../emergencies.md) where CLs must pass through the
-*whole* review process very quickly, and where the quality guidelines would be
-relaxed. However, please see [What Is An Emergency?](../emergencies.md#what) for
-a description of which situations actually qualify as emergencies and which
-don't.
-
-Next: [How to Write Code Review Comments](comments.md)
+次へ：[コードレビューコメントの書き方](comments.md)

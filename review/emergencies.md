@@ -1,69 +1,38 @@
-# Emergencies
+# 緊急事態
 
-Sometimes there are emergency CLs that must pass through the entire code review
-process as quickly as
-possible.
+時には、できる限り迅速にコードレビューのプロセス全体を通過しなければならない緊急のCLが存在します。
 
+## 緊急事態とは何か？ {#what}
 
+緊急のCLとは、大規模なローンチを継続させる、製品でユーザーに大きな影響を与えるバグを修正する、切迫した法的問題に対処する、大きなセキュリティホールを閉じるなど、**小さな**変更です。
 
-## What Is An Emergency? {#what}
+緊急事態では、コードレビューのプロセス全体の速度、そして[返信の速度](reviewer/speed.md)だけでなく、重要です。この場合**のみ**、レビュアーはレビューの速度とコードの正確性（実際に緊急事態を解決しているか？）を何よりも優先すべきです。また、当然ながら、このようなレビューは他のすべてのコードレビューよりも優先されるべきです。
 
-An emergency CL would be a **small** change that: allows a major launch to
-continue instead of rolling back, fixes a bug significantly affecting users in
-production, handles a pressing legal issue, closes a major security hole, etc.
+しかし、緊急事態が解決した後、緊急のCLを再度確認し、それらに[より徹底的なレビュー](reviewer/looking-for.md)を行うべきです。
 
-In emergencies we really do care about the speed of the entire code review
-process, not just the [speed of response](reviewer/speed.md). In this case
-*only*, the reviewer should care more about the speed of the review and the
-correctness of the code (does it actually resolve the emergency?) than anything
-else. Also (perhaps obviously) such reviews should take priority over all other
-code reviews, when they come up.
+## 緊急事態ではないものは何か？ {#not}
 
-However, after the emergency is resolved you should look over the emergency CLs
-again and give them a [more thorough review](reviewer/looking-for.md).
+明確に述べておきますが、以下のケースは緊急事態**ではありません**：
 
-## What Is NOT An Emergency? {#not}
+-   今週ではなく来週にローンチしたいという希望（パートナーアグリーメントなど、ローンチに対する実際の[厳格な期限](#deadlines)がある場合を除く）。
+-   開発者が長い間機能に取り組んでおり、CLを組み込むことを強く望んでいる。
+-   レビュアーがすべて別のタイムゾーンにいるか、オフサイトで不在である。
+-   金曜日の終わりであり、開発者が週末に出発する前にこのCLを取り込むことが素晴らしいと感じられる。
+-   マネージャーが、[柔軟（固定ではない）期限](#deadlines)のためにこのレビューを完了し、今日中にCLをチェックインしなければならないと言っている。
+-   テストの失敗やビルドの破壊を引き起こしているCLをロールバックする。
 
-To be clear, the following cases are *not* an emergency:
+などです。
 
--   Wanting to launch this week rather than next week (unless there is some
-    actual [hard deadline](#deadlines) for launch such as a partner agreement).
--   The developer has worked on a feature for a very long time and they really
-    want to get the CL in.
--   The reviewers are all in another timezone where it is currently nighttime or
-    they are away on an off-site.
--   It is the end of the day on a Friday and it would just be great to get this
-    CL in before the developer leaves for the weekend.
--   A manager says that this review has to be complete and the CL checked in
-    today because of a [soft (not hard) deadline](#deadlines).
--   Rolling back a CL that is causing test failures or build breakages.
+## 厳格な期限とは何か？ {#deadlines}
 
-And so on.
+厳格な期限とは、期限を逃した場合に**何か破局的なことが起こる**期限です。例えば：
 
-## What Is a Hard Deadline? {#deadlines}
+-   契約上の義務に必要な特定の日付までにCLを提出する。
+-   特定の日付までにリリースされないと、製品が市場で完全に失敗する。
+-   一部のハードウェアメーカーは年に一度しか新しいハードウェアを出荷しない。彼らにコードを提出する期限を逃すと、提出しようとしているコードの種類によっては破局的なことが起こる可能性があります。
 
-A hard deadline is one where **something disastrous would happen** if you miss
-it. For example:
+1週間のリリースの遅延は破局的ではありません。重要な会議を逃すことは破局的な場合もあるが、多くの場合はそうではありません。
 
--   Submitting your CL by a certain date is necessary for a contractual
-    obligation.
--   Your product will completely fail in the marketplace if not released by a
-    certain date.
--   Some hardware manufacturers only ship new hardware once a year. If you miss
-    the deadline to submit code to them, that could be disastrous, depending on
-    what type of code you're trying to ship.
+ほとんどの期限は柔軟な期限であり、厳格な期限ではありません。特定の時間までに機能が完成するという願望を表しています。それらは重要ですが、それらを達成するためにコードの健康を犠牲にするべきではありません。
 
-Delaying a release for a week is not disastrous. Missing an important conference
-might be disastrous, but often is not.
-
-Most deadlines are soft deadlines, not hard deadlines. They represent a desire
-for a feature to be done by a certain time. They are important, but you
-shouldn't be sacrificing code health to make them.
-
-If you have a long release cycle (several weeks) it can be tempting to sacrifice
-code review quality to get a feature in before the next cycle. However, this
-pattern, if repeated, is a common way for projects to build up overwhelming
-technical debt. If developers are routinely submitting CLs near the end of the
-cycle that "must get in" with only superficial review, then the team should
-modify its process so that large feature changes happen early in the cycle and
-have enough time for good review.
+長いリリースサイクル（数週間）がある場合、次のサイクルの前に機能を取り込むためにコードレビューの品質を犠牲にすることは誘惑的かもしれません。しかし、このパターンが繰り返されると、プロジェクトが圧倒的な技術的負債を蓄積する一般的な方法です。開発者がサイクルの終わりに「絶対に取り込まなければならない」と superficial review のみでCLを頻繁に提出している場合、チームは大きな機能変更がサイクルの初めに行われ、良いレビューに十分な時間があるようにプロセスを修正するべきです。
